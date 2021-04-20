@@ -11,10 +11,8 @@ export const fetchApi = (url) => {
       .then(data => {
         resolve(data);
       })
-      .catch(response => {
-        response.json().then(error => {
-          reject(error);
-        });
+      .catch((e) => {
+        alert("При загрузке произошла ошибка: \n" + e);
       });
   });
 }

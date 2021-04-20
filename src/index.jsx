@@ -1,42 +1,62 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import styled, { css } from 'styled-components';
 import CallApi from "./api";
+import Row from "./components/Row";
 
-//Чекбокс, No, Фио, возраст, рост, вес, зарплата, 
+const DelBtn = styled.div`
+  color: #dbdbdb;
+  background: white;
+  border: 2px solid #dbdbdb;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 10px;
+  width: max-content;
+  padding: 10px 20px;
+  margin-left: auto;
+  margin-top: 20px;
+  cursor: pointer;
+  ${props => !props.disabled && css`
+    color: white;
+    background: #0085be;
+    border: 2px solid #0085be;
+    &:hover {
+      background: #02597e;
+      border: 2px solid #02597e;
+    }
+    &:active {
+      background: #002abe;
+      border: 2px solid #002abe;
+    }
+  `}
+`;
 
-class Row extends React.Component {
+class Button extends React.Component {
   render() {
-    return(
-      <React.Fragment>
-        <tr>
-          <td>
-            <input 
-              onChange={(event) => this.props.onCheckStateChanged(event.target.checked)} 
-              type="checkbox" 
-              checked={this.props.checked}
-              >
-            </input>
-          </td>
-          {/* Присылать сюда пропсы массивом, чтобы обходить тут через map */}
-          <td>{this.props.person.full_name}</td>
-          <td>{this.props.person.age}</td>
-          <td>{this.props.person.height}</td>
-          <td>{this.props.person.weight}</td>
-          <td>{this.props.person.salary}</td>
-          <td><button onClick={this.props.onRemove}>Remove</button></td>
-        </tr>
-      </React.Fragment>
+    return (
+      <DelBtn disabled={this.props.disabled} onClick={this.props.onDeleteClick}>
+        Удалить выбранные
+      </DelBtn>
     );
   }
 }
 
-function Button(props) {
-    return (
-      <div onClick={props.onDeleteClick}>
-        Удалить выбранные
-      </div>
-    );
-}
+//TODO можно запилить константу со списком полей в таблице же
+const TableWrap = styled.div`
+  width: max-content;
+  margin: auto;
+`;
+
+const StyledTable = styled.table`
+  border-radius: 15px;
+  background: #f0f0f0;
+  margin: auto;
+  border-collapse: collapse;
+`;
+
+const StyledTh = styled.td`
+  &{padding: 5px 15px;}
+`;
 
 class Table extends React.Component {
   constructor(props){
@@ -121,35 +141,42 @@ class Table extends React.Component {
   }
 
   render() {
+    const colsList = ["ФИО", "Возраст(лет)", "Рост", "Вес", "Зарплата"]
+
     return(
-      <div>
-        <table>
+      <TableWrap>
+        <StyledTable>
           <thead>
             <tr>
-              <th><input type="checkbox" onChange={(event) => this.handleHeadingCheck(event.target.checked)}></input></th>
-              <th>ФИО</th>
-              <th>Возраст(лет)</th>
-              <th>Рост</th>
-              <th>Вес</th>
-              <th>Зарплата</th>
+              <StyledTh>
+                <input 
+                  type="checkbox" 
+                  onChange={(event) => this.handleHeadingCheck(event.target.checked)} 
+                  checked={!this.state.checked.includes(false)}>
+                </input>
+              </StyledTh>
+              {colsList.map((item, index) => (
+                <StyledTh key={index}>{item}</StyledTh>
+              ))}
             </tr>
           </thead>
           <tbody>
             {this.state.people.map((element, index) => (
               <Row 
                 key={index}
-                person={element}
+                person={Object.values(element)}
                 onCheckStateChanged={(checked) => this.handleRowCheck(index, checked)}
                 onRemove={() => this.handleRemoveClick(index)}
                 checked={this.state.checked[index]}
               />
             ))}
           </tbody>
-        </table>
+        </StyledTable>
         <Button
           onDeleteClick={() => this.handleMultipleRemove()}
+          disabled={!this.state.checked.includes(true)}
         />
-      </div>
+      </TableWrap>
     );
   }
 }
