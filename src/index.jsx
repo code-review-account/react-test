@@ -30,6 +30,14 @@ class Row extends React.Component {
   }
 }
 
+function Button(props) {
+    return (
+      <div onClick={props.onDeleteClick}>
+        Удалить выбранные
+      </div>
+    );
+}
+
 class Table extends React.Component {
   constructor(props){
     super(props);
@@ -75,7 +83,7 @@ class Table extends React.Component {
       person.age = Math.round((Date.now()/1000 - element.date_of_birth) / (3600 * 24 * 365));
       person.height = this.convertHeight(element.height);
       person.weight = Math.round(this.convertWeight(element.weight));
-      person.salary = element.salary;
+      person.salary = element.salary;//TODO перевести в $
       loadedPeople.push(person);
     });
     this.setState({
@@ -98,35 +106,50 @@ class Table extends React.Component {
 
   handleRemoveClick(id){
     let newChecked = this.state.checked.filter((item, index) => index !== id);
-    let newPeople = this.state.people+.filter((item, index) => index !== id);
+    let newPeople = this.state.people.filter((item, index) => index !== id);
+    this.setState({people: newPeople, checked: newChecked});
+  }
+
+  handleMultipleRemove(){
+    let checkedIds = this.state.checked.slice().reduce((arr, elem, index) => {
+      if(elem === true) arr.push(index);
+        return arr;
+    }, []);
+    let newChecked = this.state.checked.filter((item, index) => !checkedIds.includes(index));
+    let newPeople = this.state.people.filter((item, index) => !checkedIds.includes(index));
     this.setState({people: newPeople, checked: newChecked});
   }
 
   render() {
     return(
-      <table>
-        <thead>
-          <tr>
-            <th><input type="checkbox" onChange={(event) => this.handleHeadingCheck(event.target.checked)}></input></th>
-            <th>ФИО</th>
-            <th>Возраст(лет)</th>
-            <th>Рост</th>
-            <th>Вес</th>
-            <th>Зарплата</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.state.people.map((element, index) => (
-            <Row 
-              key={index}
-              person={element}
-              onCheckStateChanged={(checked) => this.handleRowCheck(index, checked)}
-              onRemove={() => this.handleRemoveClick(index)}
-              checked={this.state.checked[index]}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" onChange={(event) => this.handleHeadingCheck(event.target.checked)}></input></th>
+              <th>ФИО</th>
+              <th>Возраст(лет)</th>
+              <th>Рост</th>
+              <th>Вес</th>
+              <th>Зарплата</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.people.map((element, index) => (
+              <Row 
+                key={index}
+                person={element}
+                onCheckStateChanged={(checked) => this.handleRowCheck(index, checked)}
+                onRemove={() => this.handleRemoveClick(index)}
+                checked={this.state.checked[index]}
+              />
+            ))}
+          </tbody>
+        </table>
+        <Button
+          onDeleteClick={() => this.handleMultipleRemove()}
+        />
+      </div>
     );
   }
 }
