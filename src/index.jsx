@@ -1,42 +1,28 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import CallApi from "./api";
 import Row from "./components/Row";
+import Button from "./components/Button";
 
-const DelBtn = styled.div`
-  color: #dbdbdb;
-  background: white;
-  border: 2px solid #dbdbdb;
-  font-size: 12px;
-  font-weight: bold;
-  border-radius: 10px;
-  width: max-content;
-  padding: 10px 20px;
-  margin-left: auto;
-  margin-top: 20px;
-  cursor: pointer;
-  ${props => !props.disabled && css`
-    color: white;
-    background: #0085be;
-    border: 2px solid #0085be;
-    &:hover {
-      background: #02597e;
-      border: 2px solid #02597e;
-    }
-    &:active {
-      background: #002abe;
-      border: 2px solid #002abe;
-    }
-  `}
-`;
 
-class Button extends React.Component {
+
+class TableBody extends React.Component {
   render() {
     return (
-      <DelBtn disabled={this.props.disabled} onClick={this.props.onDeleteClick}>
-        Удалить выбранные
-      </DelBtn>
+      <React.Fragment>
+        <tbody>{/* component Table Body */}
+          {this.props.tableData.map((element, index) => (
+            <Row 
+              key={index}
+              person={Object.values(element)}
+              onCheckStateChanged={(checked) => this.props.onTableRowCheckChange(index, checked)}
+              onRemove={() => this.props.onTableRowRemove(index)}
+              checked={this.props.checked[index]}
+            />
+          ))}
+        </tbody>
+      </React.Fragment>
     );
   }
 }
@@ -45,6 +31,15 @@ class Button extends React.Component {
 const TableWrap = styled.div`
   width: max-content;
   margin: auto;
+`;
+
+const TableHeading = styled.h1`
+  font-family: 'Roboto';
+  font-size: 24px;
+  font-weight: bold;
+  font-stretch: normal;
+  line-height: normal;
+  color: #4c4c4c;
 `;
 
 const StyledTable = styled.table`
@@ -140,13 +135,16 @@ class Table extends React.Component {
     this.setState({people: newPeople, checked: newChecked});
   }
 
-  render() {
+  render() {//выкинуть все это в компонент table, слишком грязно, тут оставить только App, в котором будет исключительно <Table />
     const colsList = ["ФИО", "Возраст(лет)", "Рост", "Вес", "Зарплата"]
 
     return(
       <TableWrap>
-        <StyledTable>
-          <thead>
+        <TableHeading>
+          Таблица пользователей
+        </TableHeading>
+        <StyledTable>{/* component Table */}
+          <thead>{/* component Table Head */}
             <tr>
               <StyledTh>
                 <input 
@@ -160,17 +158,12 @@ class Table extends React.Component {
               ))}
             </tr>
           </thead>
-          <tbody>
-            {this.state.people.map((element, index) => (
-              <Row 
-                key={index}
-                person={Object.values(element)}
-                onCheckStateChanged={(checked) => this.handleRowCheck(index, checked)}
-                onRemove={() => this.handleRemoveClick(index)}
-                checked={this.state.checked[index]}
-              />
-            ))}
-          </tbody>
+          <TableBody 
+            tableData={this.state.people}
+            onTableRowCheckChange={(index, checked) => this.handleRowCheck(index, checked)}
+            onTableRowRemove={(index) => this.handleRemoveClick(index)}
+            checked={this.state.checked}
+          />
         </StyledTable>
         <Button
           onDeleteClick={() => this.handleMultipleRemove()}
