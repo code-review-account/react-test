@@ -5,13 +5,15 @@ import CallApi from "./api";
 import Row from "./components/Row";
 import Button from "./components/Button";
 
-
+const TBody = styled.tbody`
+  ${'' /* display: block; */}
+`;
 
 class TableBody extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <tbody>{/* component Table Body */}
+        <TBody>{/* component Table Body */}
           {this.props.tableData.map((element, index) => (
             <Row 
               key={index}
@@ -21,7 +23,7 @@ class TableBody extends React.Component {
               checked={this.props.checked[index]}
             />
           ))}
-        </tbody>
+        </TBody>
       </React.Fragment>
     );
   }
@@ -31,9 +33,10 @@ class TableBody extends React.Component {
 const TableWrap = styled.div`
   width: max-content;
   margin: auto;
+  width: 1200px;
 `;
 
-const TableHeading = styled.h1`
+const TableName = styled.h1`
   font-family: 'Roboto';
   font-size: 24px;
   font-weight: bold;
@@ -42,15 +45,40 @@ const TableHeading = styled.h1`
   color: #4c4c4c;
 `;
 
-const StyledTable = styled.table`
-  border-radius: 15px;
+const TableTop = styled.thead`
   background: #f0f0f0;
-  margin: auto;
-  border-collapse: collapse;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Roboto';
+  color: #4c4c4c;
+
+  ${'' /* display: block; */}
+
 `;
 
-const StyledTh = styled.td`
-  &{padding: 5px 15px;}
+const StyledTable = styled.table`
+  border-radius: 6px;
+  background: #ffffff;
+  margin: auto;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0 24px;
+  padding: 0 0 16px;
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #f5f5f5;
+
+  ${'' /* display: block; */}
+`;
+
+const FlexRow = styled.tr`
+  ${'' /* display: flex; */}
+`;
+
+const StyledTh = styled.th`
+  padding: 9px 15px;
+
+  text-align: left;
+  ${'' /* flex-basis: 100%; */}
 `;
 
 class Table extends React.Component {
@@ -92,8 +120,9 @@ class Table extends React.Component {
 
   preparePeopleDetails(data){
     let loadedPeople = [];
-    data.forEach(element => {
+    data.forEach((element, i) => {
       let person = {};
+      person.id = i+1;
       person.full_name = element.first_name + " " + element.last_name;
       person.age = Math.round((Date.now()/1000 - element.date_of_birth) / (3600 * 24 * 365));
       person.height = this.convertHeight(element.height);
@@ -136,28 +165,30 @@ class Table extends React.Component {
   }
 
   render() {//выкинуть все это в компонент table, слишком грязно, тут оставить только App, в котором будет исключительно <Table />
-    const colsList = ["ФИО", "Возраст(лет)", "Рост", "Вес", "Зарплата"]
+    const colsList = ["№", "ФИО", "Возраст(лет)", "Рост", "Вес", "Зарплата", ""]
 
     return(
       <TableWrap>
-        <TableHeading>
+        <TableName>
           Таблица пользователей
-        </TableHeading>
+        </TableName>
         <StyledTable>{/* component Table */}
-          <thead>{/* component Table Head */}
-            <tr>
+          <TableTop>{/* component Table Head */}
+            <FlexRow>
               <StyledTh>
+              <label>
                 <input 
                   type="checkbox" 
                   onChange={(event) => this.handleHeadingCheck(event.target.checked)} 
                   checked={!this.state.checked.includes(false)}>
                 </input>
+              </label>
               </StyledTh>
               {colsList.map((item, index) => (
                 <StyledTh key={index}>{item}</StyledTh>
               ))}
-            </tr>
-          </thead>
+            </FlexRow>
+          </TableTop>
           <TableBody 
             tableData={this.state.people}
             onTableRowCheckChange={(index, checked) => this.handleRowCheck(index, checked)}

@@ -6,11 +6,13 @@ const DelBtn = styled.div`
   color: #dbdbdb;
   background: white;
   border: 2px solid #dbdbdb;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   border-radius: 10px;
   width: max-content;
-  padding: 10px 20px;
+  min-width: 139px;
+  line-height: 16px;
+  padding: 16px 39px;
   margin-left: auto;
   margin-top: 20px;
   cursor: pointer;
