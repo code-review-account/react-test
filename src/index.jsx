@@ -5,80 +5,69 @@ import CallApi from "./api";
 import Row from "./components/Row";
 import Button from "./components/Button";
 
-const TBody = styled.tbody`
-  ${'' /* display: block; */}
-`;
 
-class TableBody extends React.Component {
-  render() {
-    return (
-      <React.Fragment>
-        <TBody>{/* component Table Body */}
-          {this.props.tableData.map((element, index) => (
-            <Row 
-              key={index}
-              person={Object.values(element)}
-              onCheckStateChanged={(checked) => this.props.onTableRowCheckChange(index, checked)}
-              onRemove={() => this.props.onTableRowRemove(index)}
-              checked={this.props.checked[index]}
-            />
-          ))}
-        </TBody>
-      </React.Fragment>
-    );
-  }
-}
-
-//TODO можно запилить константу со списком полей в таблице же
-const TableWrap = styled.div`
-  width: max-content;
-  margin: auto;
+const Styles = styled.div`
   width: 1200px;
-`;
-
-const TableName = styled.h1`
-  font-family: 'Roboto';
-  font-size: 24px;
-  font-weight: bold;
-  font-stretch: normal;
-  line-height: normal;
-  color: #4c4c4c;
-`;
-
-const TableTop = styled.thead`
-  background: #f0f0f0;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: 'Roboto';
-  color: #4c4c4c;
-
-  ${'' /* display: block; */}
-
-`;
-
-const StyledTable = styled.table`
-  border-radius: 6px;
-  background: #ffffff;
   margin: auto;
-  border-collapse: collapse;
-  width: 100%;
-  margin: 16px 0 24px;
-  padding: 0 0 16px;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #f5f5f5;
 
-  ${'' /* display: block; */}
-`;
+  h1 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    font-stretch: normal;
+    line-height: normal;
+    color: #4c4c4c;
+  }
 
-const FlexRow = styled.tr`
-  ${'' /* display: flex; */}
-`;
+  table {
+    border-radius: 6px;
+    background: #ffffff;
+    margin: auto;
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0 24px;
+    padding: 0 0 16px;
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #f5f5f5;
 
-const StyledTh = styled.th`
-  padding: 9px 15px;
+    ${'' /* display: block; */}
+  }
 
-  text-align: left;
+  thead {
+    background: #f0f0f0;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+    color: #4c4c4c;
+    ${'' /* display: block; */}
+  }
+
+  thead tr {
+    ${'' /* display: flex; */}
+  }
+
+  tbody tr:nth-child(2n+1){
+    background: #fafafa !important;
+  }
+
+  th,
+  td {
+    padding: 9px 15px;
+    text-align: left;
+    ${'' /* flex-basis: 100%; */}
+  }
+
+  td {
+    padding: 9px 15px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    color: #4c4c4c;
+    min-height: 48px;
+  
   ${'' /* flex-basis: 100%; */}
+  ${'' /* margin: 4px 47px 7px 146px; */}
+  }
+
 `;
 
 class Table extends React.Component {
@@ -148,13 +137,13 @@ class Table extends React.Component {
     this.setState({checked: newChecked});
   }
 
-  handleRemoveClick(id){
+  handleRowRemoveClick(id){
     let newChecked = this.state.checked.filter((item, index) => index !== id);
     let newPeople = this.state.people.filter((item, index) => index !== id);
     this.setState({people: newPeople, checked: newChecked});
   }
 
-  handleMultipleRemove(){
+  handle(){
     let checkedIds = this.state.checked.slice().reduce((arr, elem, index) => {
       if(elem === true) arr.push(index);
         return arr;
@@ -168,14 +157,14 @@ class Table extends React.Component {
     const colsList = ["№", "ФИО", "Возраст(лет)", "Рост", "Вес", "Зарплата", ""]
 
     return(
-      <TableWrap>
-        <TableName>
+      <Styles>
+        <h1>
           Таблица пользователей
-        </TableName>
-        <StyledTable>{/* component Table */}
-          <TableTop>{/* component Table Head */}
-            <FlexRow>
-              <StyledTh>
+        </h1>
+        <table>{/* component Table */}
+          <thead>{/* component Table Head */}
+            <tr>
+              <th>
               <label>
                 <input 
                   type="checkbox" 
@@ -183,24 +172,29 @@ class Table extends React.Component {
                   checked={!this.state.checked.includes(false)}>
                 </input>
               </label>
-              </StyledTh>
+              </th>
               {colsList.map((item, index) => (
-                <StyledTh key={index}>{item}</StyledTh>
+                <th key={index}>{item}</th>
               ))}
-            </FlexRow>
-          </TableTop>
-          <TableBody 
-            tableData={this.state.people}
-            onTableRowCheckChange={(index, checked) => this.handleRowCheck(index, checked)}
-            onTableRowRemove={(index) => this.handleRemoveClick(index)}
-            checked={this.state.checked}
-          />
-        </StyledTable>
+            </tr>
+          </thead>
+          <tbody>{/* component Table Body */}
+          {this.state.people.map((element, index) => (
+            <Row 
+              key={index}
+              person={Object.values(element)}
+              onCheckStateChanged={(checked) => this.handleRowCheck(index, checked)}
+              onRemove={() => this.handleRowRemoveClick(index)}
+              checked={this.state.checked[index]}
+            />
+          ))}
+        </tbody>
+        </table>
         <Button
           onDeleteClick={() => this.handleMultipleRemove()}
           disabled={!this.state.checked.includes(true)}
         />
-      </TableWrap>
+      </Styles>
     );
   }
 }

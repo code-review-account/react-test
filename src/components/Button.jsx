@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 
 
 const DelBtn = styled.div`
+  font-family: "Roboto", sans-seif;
   color: #dbdbdb;
   background: white;
   border: 2px solid #dbdbdb;
