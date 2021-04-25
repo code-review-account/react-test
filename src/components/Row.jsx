@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Checkbox from "./Checkbox";
 
 const BtnWrap = styled.div`
   display: flex;
@@ -7,20 +8,16 @@ const BtnWrap = styled.div`
   margin-left: auto;
 `;
 
-//input можно получается будет представить в качестве div где выбранный будет подсвечиваться через before-элемент?
-
 export default class Row extends React.Component {
   render() {
     return(
       <React.Fragment>
         <tr>
           <td>
-            <input 
-              onChange={(event) => this.props.onCheckStateChanged(event)} 
-              type="checkbox" 
+            <Checkbox 
+              onCheckChange={(event) => this.props.onCheckStateChanged(event)} 
               checked={this.props.checked}
-              >
-            </input>
+            />
           </td>
           {this.props.person.map((item, index) => (
             <td key={index}>{item}</td>

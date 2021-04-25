@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import CallApi from "./api";
 import Row from "./components/Row";
 import Button from "./components/Button";
+import Checkbox from "./components/Checkbox";
 
 
 const Styles = styled.div`
@@ -23,15 +24,12 @@ const Styles = styled.div`
     border-radius: 6px;
     background: #ffffff;
     margin: auto;
-    ${'' /* border-collapse: collapse; */}
     width: 100%;
     margin: 16px 0 24px;
     padding: 0 0 16px;
     box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
     border: 1px solid #f5f5f5;
     border-spacing: 0;
-
-    ${'' /* display: block; */}
   }
 
   thead {
@@ -40,18 +38,7 @@ const Styles = styled.div`
     font-weight: bold;
     font-family: 'Roboto', sans-serif;
     color: #4c4c4c;
-
-    ${'' /* display: block; */}
   }
-
-  ${'' /* thead tr,
-  tbody tr {
-    display: flex;
-  } */}
-
-  ${'' /* tbody {
-    display: block;
-  } */}
 
   tbody tr:nth-child(2n){
     background: #fafafa !important;
@@ -61,8 +48,6 @@ const Styles = styled.div`
   td {
     padding: 12px 15px;
     text-align: left;
-
-    ${'' /* flex-basis: 100%; */}
   }
 
   td {
@@ -70,9 +55,6 @@ const Styles = styled.div`
     font-family: 'Roboto', sans-serif;
     color: #4c4c4c;
     min-height: 48px;
-
-    ${'' /* flex-basis: 100%; */}
-    ${'' /* margin: 4px 47px 7px 146px; */}
   }
 
   th:nth-child(1),
@@ -81,6 +63,8 @@ const Styles = styled.div`
   td:nth-child(2){
     width: 20px;
   }
+
+
 `;
 
 class Table extends React.Component {
@@ -159,7 +143,8 @@ class Table extends React.Component {
     this.setState({checked: newCheckedState});
   }
 
-  handleHeadingCheck(checked){
+  handleHeadingCheck(event){
+    const checked = event.target.checked;
     let newChecked = this.state.checked.slice();
     newChecked = newChecked.fill(checked);
     this.setState({checked: newChecked});
@@ -193,13 +178,10 @@ class Table extends React.Component {
             <thead>{/* component Table Head */}
               <tr>
                 <th>
-                <label>
-                  <input 
-                    type="checkbox" 
-                    onChange={(event) => this.handleHeadingCheck(event.target.checked)} 
-                    checked={!this.state.checked.includes(false)}>
-                  </input>
-                </label>
+                <Checkbox 
+                  onCheckChange={(event) => this.handleHeadingCheck(event)}
+                  checked={!this.state.checked.includes(false)}
+                />
                 </th>
                 {colsList.map((item, index) => (
                   <th key={index}>{item}</th>
