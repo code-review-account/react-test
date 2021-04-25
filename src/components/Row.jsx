@@ -16,7 +16,7 @@ export default class Row extends React.Component {
         <tr>
           <td>
             <input 
-              onChange={(event) => this.props.onCheckStateChanged(event.target.checked)} 
+              onChange={(event) => this.props.onCheckStateChanged(event)} 
               type="checkbox" 
               checked={this.props.checked}
               >

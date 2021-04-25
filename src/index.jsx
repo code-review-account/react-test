@@ -23,12 +23,13 @@ const Styles = styled.div`
     border-radius: 6px;
     background: #ffffff;
     margin: auto;
-    border-collapse: collapse;
+    ${'' /* border-collapse: collapse; */}
     width: 100%;
     margin: 16px 0 24px;
     padding: 0 0 16px;
     box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
     border: 1px solid #f5f5f5;
+    border-spacing: 0;
 
     ${'' /* display: block; */}
   }
@@ -39,35 +40,47 @@ const Styles = styled.div`
     font-weight: bold;
     font-family: 'Roboto', sans-serif;
     color: #4c4c4c;
+
     ${'' /* display: block; */}
   }
 
-  thead tr {
-    ${'' /* display: flex; */}
-  }
+  ${'' /* thead tr,
+  tbody tr {
+    display: flex;
+  } */}
 
-  tbody tr:nth-child(2n+1){
+  ${'' /* tbody {
+    display: block;
+  } */}
+
+  tbody tr:nth-child(2n){
     background: #fafafa !important;
   }
 
   th,
   td {
-    padding: 9px 15px;
+    padding: 12px 15px;
     text-align: left;
+
     ${'' /* flex-basis: 100%; */}
   }
 
   td {
-    padding: 9px 15px;
     font-size: 14px;
     font-family: 'Roboto', sans-serif;
     color: #4c4c4c;
     min-height: 48px;
-  
-  ${'' /* flex-basis: 100%; */}
-  ${'' /* margin: 4px 47px 7px 146px; */}
+
+    ${'' /* flex-basis: 100%; */}
+    ${'' /* margin: 4px 47px 7px 146px; */}
   }
 
+  th:nth-child(1),
+  th:nth-child(2),
+  td:nth-child(1),
+  td:nth-child(2){
+    width: 20px;
+  }
 `;
 
 class Table extends React.Component {
@@ -125,10 +138,25 @@ class Table extends React.Component {
     });
   }
 
-  handleRowCheck(id, checked){
-    const newChecked = this.state.checked.slice();
-    newChecked[id] = checked;
-    this.setState({checked: newChecked});
+  handleRowCheck(id, event){
+    const checked = event.target.checked;
+    let newCheckedState = this.state.checked.slice();
+    if(event.nativeEvent.shiftKey){
+      if(this.state.checked.includes(true)){
+        const lastChecked = this.state.checked.indexOf(true);
+          newCheckedState = newCheckedState.map((elem, i) => {
+            if((i >= id && i <= lastChecked) || elem === true) {
+              return elem = true;
+            }
+            else if((i <= id && i >= lastChecked)) {
+              return elem = true;
+            }
+            return false;
+          });
+      }
+    }
+    newCheckedState[id] = checked;
+    this.setState({checked: newCheckedState});
   }
 
   handleHeadingCheck(checked){
@@ -143,7 +171,7 @@ class Table extends React.Component {
     this.setState({people: newPeople, checked: newChecked});
   }
 
-  handle(){
+  handleRemoveChecked(){
     let checkedIds = this.state.checked.slice().reduce((arr, elem, index) => {
       if(elem === true) arr.push(index);
         return arr;
@@ -161,37 +189,37 @@ class Table extends React.Component {
         <h1>
           Таблица пользователей
         </h1>
-        <table>{/* component Table */}
-          <thead>{/* component Table Head */}
-            <tr>
-              <th>
-              <label>
-                <input 
-                  type="checkbox" 
-                  onChange={(event) => this.handleHeadingCheck(event.target.checked)} 
-                  checked={!this.state.checked.includes(false)}>
-                </input>
-              </label>
-              </th>
-              {colsList.map((item, index) => (
-                <th key={index}>{item}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>{/* component Table Body */}
-          {this.state.people.map((element, index) => (
-            <Row 
-              key={index}
-              person={Object.values(element)}
-              onCheckStateChanged={(checked) => this.handleRowCheck(index, checked)}
-              onRemove={() => this.handleRowRemoveClick(index)}
-              checked={this.state.checked[index]}
-            />
-          ))}
-        </tbody>
-        </table>
+          <table>{/* component Table */}
+            <thead>{/* component Table Head */}
+              <tr>
+                <th>
+                <label>
+                  <input 
+                    type="checkbox" 
+                    onChange={(event) => this.handleHeadingCheck(event.target.checked)} 
+                    checked={!this.state.checked.includes(false)}>
+                  </input>
+                </label>
+                </th>
+                {colsList.map((item, index) => (
+                  <th key={index}>{item}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>{/* component Table Body */}
+            {this.state.people.map((element, index) => (
+              <Row 
+                key={index}
+                person={Object.values(element)}
+                onCheckStateChanged={(event) => this.handleRowCheck(index, event)}
+                onRemove={() => this.handleRowRemoveClick(index)}
+                checked={this.state.checked[index]}
+              />
+            ))}
+          </tbody>
+          </table>
         <Button
-          onDeleteClick={() => this.handleMultipleRemove()}
+          onDeleteClick={() => this.handleRemoveChecked()}
           disabled={!this.state.checked.includes(true)}
         />
       </Styles>
