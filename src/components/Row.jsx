@@ -34,7 +34,7 @@ export default class Row extends React.Component {
     return(
       <React.Fragment>
         <tr>
-          <td>
+          <td className="person-checkbox">
             <Checkbox 
               onCheckChange={(event) => this.props.onCheckStateChanged(event)} 
               checked={this.props.checked}
@@ -46,10 +46,6 @@ export default class Row extends React.Component {
           <td className="person-height">{this.props.person.height}</td>
           <td className="person-weight">{this.props.person.weight}</td>
           <td className="person-salary">{this.props.person.salary}</td>
-
-          {/* {this.props.person.map((item, index) => (
-            <td key={index}>{item}</td>
-          ))} */}
           <td>
             <ActionButtonsWrap>
               <ActionBtn edit/>

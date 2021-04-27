@@ -35,19 +35,29 @@ export default class Table extends React.Component {
     }
   
     convertWeight(oldWeight) {
-      return oldWeight * 0.453592;
+      const weightKg = Math.round(oldWeight * 0.453592);
+      return weightKg + " кг";
+    }
+
+    convertSalary(eur) {
+       const salaryUSD = Math.round(eur * this.state.currencyData.rates.USD);
+       return "$" + salaryUSD;
+    }
+
+    convertDate(birth_date) {
+      return Math.round((Date.now()/1000 - birth_date) / (3600 * 24 * 365))
     }
   
-    preparePeopleDetails(data){
+    preparePeopleDetails(){
+      const data = this.state.people.slice();
       let loadedPeople = [];
       data.forEach((element, i) => {
         let person = {};
-        person.id = i+1;
         person.full_name = element.first_name + " " + element.last_name;
-        person.age = Math.round((Date.now()/1000 - element.date_of_birth) / (3600 * 24 * 365));
+        person.age = this.convertDate(element.date_of_birth);
         person.height = this.convertHeight(element.height);
-        person.weight = Math.round(this.convertWeight(element.weight));
-        person.salary = element.salary;//TODO перевести в $
+        person.weight = this.convertWeight(element.weight);
+        person.salary = this.convertSalary(element.salary);//TODO перевести в $
         loadedPeople.push(person);
       });
       this.setState({
@@ -101,7 +111,17 @@ export default class Table extends React.Component {
     }
   
     componentDidMount() {
-      this.getPeopleDetails();
+      Promise.all([
+        CallApi.getPeopleData(),
+        CallApi.getCurrencyData(),
+      ]).then(([peopleRes, currencyRes]) => {
+        this.setState({
+          people: peopleRes,
+          currencyData: currencyRes
+        }, () => {
+          this.preparePeopleDetails(peopleRes);
+        });
+      });
     }
   
     render() {//выкинуть все это в компонент table, слишком грязно, тут оставить только App, в котором будет исключительно <Table />

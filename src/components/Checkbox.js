@@ -48,8 +48,7 @@ export default class Checkbox extends React.Component {
         <input 
           type="checkbox" 
           onChange={(event) => {this.props.onCheckChange(event)}} 
-          checked={this.props.checked}>
-        </input>
+        />
         <span className="checkmark"></span>
       </CheckboxLabel>
     );

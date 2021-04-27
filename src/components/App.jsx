@@ -52,12 +52,24 @@ const Styles = styled.div`
     min-height: 48px;
   }
 
-  th:nth-child(1),
-  th:nth-child(2),
-  td:nth-child(1),
-  td:nth-child(2){
+  td.person-checkbox,
+  td.person-number{
     width: 20px;
   }
+
+  td.person-name{
+    width: 280px;
+  }
+
+  td.person-age{
+    width: 130px;
+  }
+
+  td.person-weight,
+  td.person-height{
+    width: 80px;
+  }
+
 `;
 
 export default class App extends React.Component {

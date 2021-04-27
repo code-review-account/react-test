@@ -23,4 +23,8 @@ export default class CallApi {
     return fetchApi("https://api.npoint.io/324f4ca2cdd639760638");
   }
 
+  static getCurrencyData(){
+    return fetchApi("http://api.exchangeratesapi.io/v1/latest?access_key=fe414feb63fe888fecfc75f6234266cb&format=1");
+  }
+
 }
